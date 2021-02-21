@@ -1,0 +1,12 @@
+debug: false
+log_level: 'info'
+http_listen: ':9091'
+jobs:
+  - time: '*/10 * * * *'
+    url: 'url'
+    retry_count: 1
+    retry_interval: 1 #seconds
+  - time: '*/20 * * * *'
+    url: 'url'
+    retry_count: 1
+    retry_interval: 1 #seconds
