@@ -60,8 +60,6 @@ func (c *St) Start() error {
 }
 
 func (c *St) handler(job *types.JobSt) {
-	c.lg.Infow("Handler", "url", job.Url)
-
 	defer func() {
 		if err := recover(); err != nil {
 			c.lg.Errorw("Recover", err)
