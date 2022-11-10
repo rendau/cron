@@ -41,9 +41,11 @@ func (c *St) Start() error {
 			job.RetryCount = 0
 		}
 
+		jobInst := job // fix reference of job
+
 		_, err = c.cron.AddFunc(job.Time,
 			func() {
-				c.handler(job)
+				c.handler(jobInst)
 			},
 		)
 		if err != nil {
@@ -58,6 +60,8 @@ func (c *St) Start() error {
 }
 
 func (c *St) handler(job *types.JobSt) {
+	c.lg.Infow("Handler", "url", job.Url)
+
 	defer func() {
 		if err := recover(); err != nil {
 			c.lg.Errorw("Recover", err)
