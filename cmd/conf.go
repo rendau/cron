@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"os"
+
 	"github.com/rendau/cron/internals/domain/types"
 	"github.com/rendau/dop/dopTools"
 	"github.com/spf13/viper"
@@ -9,7 +11,6 @@ import (
 var conf = struct {
 	Debug    bool           `mapstructure:"DEBUG"`
 	LogLevel string         `mapstructure:"LOG_LEVEL"`
-	ConfPath string         `mapstructure:"CONF_PATH"`
 	Jobs     []*types.JobSt `mapstructure:"JOBS"`
 }{}
 
@@ -19,7 +20,11 @@ func confLoad() {
 	viper.SetDefault("DEBUG", "false")
 	viper.SetDefault("LOG_LEVEL", "info")
 
-	viper.SetConfigFile("conf.yml")
+	confPath := os.Getenv("CONF_PATH")
+	if confPath == "" {
+		confPath = "conf.yml"
+	}
+	viper.SetConfigFile(confPath)
 	_ = viper.ReadInConfig()
 
 	viper.AutomaticEnv()
