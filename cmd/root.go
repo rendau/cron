@@ -3,38 +3,30 @@ package cmd
 import (
 	"log"
 	"os"
-	"os/signal"
-	"syscall"
 
-	"github.com/rendau/cron/internals/adapters/logger/zap"
 	"github.com/rendau/cron/internals/domain/core"
-	"github.com/rendau/cron/internals/domain/entities"
-	"github.com/rendau/cron/internals/interfaces"
-	"github.com/spf13/viper"
+	dopLoggerZap "github.com/rendau/dop/adapters/logger/zap"
+	"github.com/rendau/dop/dopTools"
 )
 
 func Execute() {
 	var err error
 
 	app := struct {
-		lg   interfaces.Logger
+		lg   *dopLoggerZap.St
 		core *core.St
 	}{}
 
-	loadConfig()
+	confLoad()
 
-	app.lg, err = zap.New(viper.GetString("LOG_LEVEL"), viper.GetBool("DEBUG"), false)
-	if err != nil {
-		log.Fatal(err)
-	}
+	app.lg = dopLoggerZap.New(conf.LogLevel, conf.Debug)
 
-	jobs := viper.Get("PARSED_JOBS").([]*entities.JobSt)
+	app.core = core.New(
+		app.lg,
+		conf.Jobs,
+	)
 
-	app.core = core.New(app.lg, jobs)
-
-	app.lg.Infow("Starting", "http_listen", viper.GetString("HTTP_LISTEN"))
-
-	for _, job := range jobs {
+	for _, job := range conf.Jobs {
 		app.lg.Infow(
 			"Cron job",
 			"time", job.Time,
@@ -42,42 +34,28 @@ func Execute() {
 		)
 	}
 
-	err = app.core.StartCron()
+	// START
+
+	app.lg.Infow("Starting")
+
+	err = app.core.Start()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	stop := make(chan os.Signal, 1)
-	signal.Notify(stop, os.Interrupt, syscall.SIGTERM, syscall.SIGINT)
+	var exitCode int
 
-	<-stop
+	<-dopTools.StopSignal()
+
+	// STOP
 
 	app.lg.Infow("Shutting down...")
 
-	app.core.StopCron()
+	app.lg.Infow("Wait routines...")
 
-	os.Exit(0)
-}
+	// app.core.StopAndWait()
 
-func loadConfig() {
-	viper.SetDefault("DEBUG", "false")
-	viper.SetDefault("HTTP_LISTEN", ":9090")
-	viper.SetDefault("LOG_LEVEL", "debug")
+	app.lg.Infow("Exit")
 
-	confFilePath := os.Getenv("CONF_PATH")
-	if confFilePath == "" {
-		confFilePath = "conf.yml"
-	}
-	viper.SetConfigFile(confFilePath)
-	_ = viper.ReadInConfig()
-
-	viper.AutomaticEnv()
-
-	jobs := make([]*entities.JobSt, 0)
-	err := viper.UnmarshalKey("JOBS", &jobs)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	viper.Set("PARSED_JOBS", jobs)
+	os.Exit(exitCode)
 }

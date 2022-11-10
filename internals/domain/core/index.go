@@ -1,19 +1,19 @@
 package core
 
 import (
-	"github.com/rendau/cron/internals/domain/entities"
-	"github.com/rendau/cron/internals/interfaces"
+	"github.com/rendau/cron/internals/domain/types"
+	"github.com/rendau/dop/adapters/logger"
 	"github.com/robfig/cron"
 )
 
 type St struct {
-	lg   interfaces.Logger
-	jobs []*entities.JobSt
+	lg   logger.Lite
+	jobs []*types.JobSt
 
 	cron *cron.Cron
 }
 
-func New(lg interfaces.Logger, jobs []*entities.JobSt) *St {
+func New(lg logger.Lite, jobs []*types.JobSt) *St {
 	return &St{
 		lg:   lg,
 		jobs: jobs,

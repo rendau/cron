@@ -1,12 +1,15 @@
 debug: false
 log_level: 'info'
-http_listen: ':9091'
 jobs:
-  - time: '*/10 * * * *'
-    url: 'url'
+  - time: '0 */10 * * *'
+    method: 'GET'
+    url: 'http://url1'
+    timeout: '5s'
     retry_count: 1
-    retry_interval: 1 #seconds
-  - time: '*/20 * * * *'
-    url: 'url'
+    retry_interval: '3s'
+  - time: '0 */20 * * *'
+    method: 'GET'
+    url: 'http://url2'
+    timeout: '5s'
     retry_count: 1
-    retry_interval: 1 #seconds
+    retry_interval: '3s'
