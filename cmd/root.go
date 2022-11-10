@@ -53,7 +53,7 @@ func Execute() {
 
 	app.lg.Infow("Wait routines...")
 
-	// app.core.StopAndWait()
+	app.core.StopAndWait()
 
 	app.lg.Infow("Exit")
 
