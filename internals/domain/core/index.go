@@ -2,6 +2,7 @@ package core
 
 import (
 	"net/http"
+	"net/url"
 	"time"
 
 	"github.com/rendau/cron/internals/domain/types"
@@ -66,8 +67,10 @@ func (c *St) handler(job *types.JobSt) {
 		}
 	}()
 
+	now := time.Now()
+
 	for i := 0; i <= job.RetryCount; i++ {
-		if c.sendReq(job) == nil {
+		if c.sendReq(job, now) == nil {
 			break
 		}
 
@@ -77,12 +80,16 @@ func (c *St) handler(job *types.JobSt) {
 	}
 }
 
-func (c *St) sendReq(job *types.JobSt) error {
+func (c *St) sendReq(job *types.JobSt, now time.Time) error {
 	req, err := http.NewRequest(job.Method, job.Url, nil)
 	if err != nil {
 		c.lg.Errorw("Fail to create http-request", err)
 		return nil
 	}
+
+	qPars := url.Values{}
+	qPars.Set("t", now.Format(time.RFC3339))
+	req.URL.RawQuery = qPars.Encode()
 
 	httpClient := http.Client{Timeout: job.Timeout}
 

@@ -1,10 +1,10 @@
 module github.com/rendau/cron
 
-go 1.18
+go 1.19
 
 require (
-	github.com/rendau/dop v1.1.17
-	github.com/robfig/cron v1.2.0
+	github.com/rendau/dop v1.1.23
+	github.com/robfig/cron/v3 v3.0.1
 	github.com/spf13/viper v1.14.0
 )
 
@@ -15,7 +15,6 @@ require (
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.5 // indirect
-	github.com/robfig/cron/v3 v3.0.1 // indirect
 	github.com/spf13/afero v1.9.2 // indirect
 	github.com/spf13/cast v1.5.0 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
