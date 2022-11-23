@@ -88,7 +88,7 @@ func (c *St) sendReq(job *types.JobSt, now time.Time) error {
 	}
 
 	qPars := url.Values{}
-	qPars.Set("t", now.Format(time.RFC3339))
+	qPars.Set("t", now.In(time.UTC).Format(time.RFC3339))
 	req.URL.RawQuery = qPars.Encode()
 
 	httpClient := http.Client{Timeout: job.Timeout}
