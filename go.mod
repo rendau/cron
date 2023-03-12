@@ -3,7 +3,7 @@ module github.com/rendau/cron
 go 1.19
 
 require (
-	github.com/rendau/dop v1.1.26
+	github.com/rendau/dop v1.1.28
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/spf13/viper v1.14.0
 )
